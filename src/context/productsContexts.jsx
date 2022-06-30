@@ -6,14 +6,19 @@ export const productsContext = React.createContext();
 const INIT_STATE = {
   products: [],
   oneProduct: null,
+  pages: 0,
 };
 
 function reducer(state = INIT_STATE, action) {
   switch (action.type) {
     case "GET_PRODUCTS":
-      return { ...state, products: action.payload };
+      return {
+        ...state,
+        products: action.payload.data,
+        pages: Math.ceil(action.payload.headers["x-total-count"] / 2),
+      };
     case "GET_ONE":
-      return { ...state, products: action.payload };
+      return { ...state, oneProduct: action.payload };
     default:
       return state;
   }
@@ -24,6 +29,7 @@ const PRODUCTS_API = "http://localhost:8000/products";
 //! Create
 const ProductsContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
+  // console.log(state);
   async function createProduct(newProduct) {
     await axios.post(PRODUCTS_API, newProduct);
     getProducts();
@@ -31,11 +37,13 @@ const ProductsContextProvider = ({ children }) => {
 
   //! Read
   async function getProducts() {
-    const res = await axios(PRODUCTS_API);
-    // console.log(res);
+    const res = await axios(`${PRODUCTS_API}${window.location.search}`);
+
+    // console.log(res.headers["x-total-count"] / 2);
+    // console.log(Math.ceil(res.headers["x-total-count"] / 2));
     dispatch({
       type: "GET_PRODUCTS",
-      payload: res.data,
+      payload: res,
     });
   }
   //! Delete
@@ -44,7 +52,7 @@ const ProductsContextProvider = ({ children }) => {
     getProducts();
   }
 
-  //! Details
+  //! Details, Get for edit
   async function getOneProduct(id) {
     const res = await axios(`${PRODUCTS_API}/${id}`);
     // console.log(res);
@@ -54,15 +62,22 @@ const ProductsContextProvider = ({ children }) => {
     });
   }
 
+  //! Update
+  async function updateProduct(id, editedProduct) {
+    await axios.patch(`${PRODUCTS_API}/${id}`, editedProduct);
+  }
+
   return (
     <productsContext.Provider
       value={{
         products: state.products,
         oneProduct: state.oneProduct,
+        pages: state.pages,
         createProduct,
         getProducts,
         deleteProduct,
         getOneProduct,
+        updateProduct,
       }}>
       {children}
     </productsContext.Provider>

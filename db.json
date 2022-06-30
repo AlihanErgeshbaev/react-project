@@ -1,11 +1,25 @@
 {
   "products": [
     {
-      "title": "q",
-      "description": "1",
-      "price": "1",
+      "title": "some title 2023",
+      "description": "description",
+      "price": "10000",
       "image": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
       "id": 2
+    },
+    {
+      "title": "qqq",
+      "description": "qqq",
+      "price": "2000",
+      "image": "qqq",
+      "id": 3
+    },
+    {
+      "title": "rrr",
+      "description": "rrr",
+      "price": "3000",
+      "image": "rrr",
+      "id": 4
     }
   ]
 }
